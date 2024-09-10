@@ -48,8 +48,8 @@ You can also run the process in Google Colab using the following link:
 
 ### Before Enhancing
 
-![Before Enhancing](example/before.mp4)
+[Before Enhancing Video](example/before.mp4)
 
 ### After Enhancing
 
-![After Enhancing](example/after.mp4)
+[After Enhancing Video](example/after.mp4)
