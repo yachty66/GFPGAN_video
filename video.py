@@ -1,7 +1,7 @@
 import cv2
 import os
 import shutil
-from moviepy.editor import VideoFileClip, AudioFileClip
+from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 def extract_frames(video_path, output_dir):
     # Clear the output directory if it exists
@@ -63,6 +63,11 @@ def add_audio_to_video(original_video_path, video_without_audio_path, final_outp
     original_video = VideoFileClip(original_video_path)
     audio = original_video.audio
 
+    # Check if the original video has audio
+    if audio is None:
+        print("Error: The original video does not contain any audio.")
+        return
+
     # Load the video without audio
     video = VideoFileClip(video_without_audio_path)
 
@@ -71,13 +76,13 @@ def add_audio_to_video(original_video_path, video_without_audio_path, final_outp
 
     # Write the final video to file
     final_video.write_videofile(final_output_path, codec='libx264', audio_codec='aac')
+    print(f'Final video with audio saved to {final_output_path}')
 
 if __name__ == "__main__":
     video_path = 'inputs/input.mp4'
     frames_dir = 'frames'
     enhanced_frames_dir = 'enhanced_frames/restored_imgs'
-    temp_output_video_path = 'outputs/temp_enhanced_video.mp4'
-    final_output_video_path = 'outputs/enhanced_video_with_audio.mp4'
+    final_output_video_path = 'outputs/enhanced_video.mp4'
 
     # Step 1: Extract frames from the video
     extract_frames(video_path, frames_dir)
@@ -86,7 +91,11 @@ if __name__ == "__main__":
     run_gfpgan_inference(frames_dir, 'enhanced_frames')
 
     # Step 3: Create a video from the enhanced frames
+    temp_output_video_path = 'outputs/temp_enhanced_video.mp4'
     create_video_from_frames(enhanced_frames_dir, temp_output_video_path)
 
-    # Step 4: Add audio to the final video
+    # Step 4: Add audio to the final video and save it
     add_audio_to_video(video_path, temp_output_video_path, final_output_video_path)
+
+    # Step 5: Remove the temporary video file
+    os.remove(temp_output_video_path)
